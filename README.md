@@ -3,7 +3,7 @@
 A Flask-based web application that allows users to browse movies, select seats, make payments, and book tickets easily  just like a real online cinema booking system!   
 
 ---
-
+ 
 ##  Features
 -  Home page with a list of movies  
 -  Movie details with description and show timings  
