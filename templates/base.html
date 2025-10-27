@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Movie Ticketing System{% endblock %}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        nav {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        nav h1 { color: #667eea; display: inline-block; }
+        nav a {
+            float: right;
+            margin-left: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        nav a.logout-btn { color: #dc3545; }
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-info { background: #d1ecf1; color: #0c5460; }
+        .alert-error { background: #f8d7da; color: #721c24; }
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <h1>🎬 Movie Ticketing</h1>
+            <div style="float: right;">
+                <a href="/user" id="loginRegisterLink">Login/Register</a>
+                <a href="#" id="myProfileLink" style="display: none;">My Profile</a>
+                <a href="#" id="logoutLink" class="logout-btn" style="display: none;">Logout</a>
+                <a href="/admin">Admin</a>
+                <a href="/">Home</a>
+            </div>
+        </nav>
+        <script>
+            function logout() {
+                sessionStorage.removeItem('user_id');
+                document.getElementById('loginRegisterLink').style.display = 'inline';
+                document.getElementById('myProfileLink').style.display = 'none';
+                document.getElementById('logoutLink').style.display = 'none';
+                window.location.href = '/user';
+            }
+            
+            function updateNavigation() {
+                const userId = sessionStorage.getItem('user_id');
+                if (userId) {
+                    document.getElementById('loginRegisterLink').style.display = 'none';
+                    document.getElementById('myProfileLink').style.display = 'inline';
+                    document.getElementById('myProfileLink').href = '/user/' + userId;
+                    document.getElementById('logoutLink').style.display = 'inline';
+                    document.getElementById('logoutLink').onclick = logout;
+                } else {
+                    document.getElementById('loginRegisterLink').style.display = 'inline';
+                    document.getElementById('myProfileLink').style.display = 'none';
+                    document.getElementById('logoutLink').style.display = 'none';
+                }
+            }
+            
+            // Update navigation on page load
+            updateNavigation();
+        </script>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</body>
+</html>

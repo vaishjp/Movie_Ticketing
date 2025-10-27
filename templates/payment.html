@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Payment{% endblock %}
+{% block extra_css %}
+<style>
+    .payment-box {
+        max-width: 600px;
+        margin: 0 auto;
+        text-align: center;
+    }
+    .booking-details {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+    .amount {
+        font-size: 32px;
+        color: #667eea;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+    .payment-methods {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin: 30px 0;
+    }
+    .payment-method {
+        padding: 20px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .payment-method:hover,
+    .payment-method.selected {
+        border-color: #667eea;
+        background: #f0f4ff;
+    }
+    .btn {
+        padding: 15px 50px;
+        background: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 18px;
+        cursor: pointer;
+    }
+    .btn:hover { background: #218838; }
+</style>
+{% endblock %}
+{% block content %}
+    <div class="payment-box">
+        <h2>Complete Your Payment</h2>
+        
+        <div class="booking-details">
+            <h3>{{ booking.title }}</h3>
+            <p>{{ booking.showdate }} at {{ booking.show_time.strftime('%I:%M %p') }}</p>
+            <div class="amount">₹{{ "%.2f"|format(booking.amount) }}</div>
+        </div>
+        
+        <form method="POST" action="/process_payment">
+            <input type="hidden" name="booking_id" value="{{ booking.booking_id }}">
+            
+            <h3>Select Payment Method</h3>
+            <div class="payment-methods">
+                <div class="payment-method" onclick="selectPayment('Credit Card', this)">
+                    <h4>💳 Credit Card</h4>
+                </div>
+                <div class="payment-method" onclick="selectPayment('Debit Card', this)">
+                    <h4>💳 Debit Card</h4>
+                </div>
+                <div class="payment-method" onclick="selectPayment('UPI', this)">
+                    <h4>📱 UPI</h4>
+                </div>
+                <div class="payment-method" onclick="selectPayment('Cash', this)">
+                    <h4>💵 Cash</h4>
+                </div>
+            </div>
+            
+            <input type="hidden" name="payment_method" id="paymentMethod" required>
+            <button type="submit" class="btn">Pay Now</button>
+        </form>
+    </div>
+    
+    <script>
+        function selectPayment(method, element) {
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            document.getElementById('paymentMethod').value = method;
+        }
+    </script>
+{% endblock %}

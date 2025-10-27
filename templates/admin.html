@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block extra_css %}
+<style>
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+        text-align: center;
+    }
+    .stat-card h3 { font-size: 40px; margin-bottom: 10px; }
+    .popular-movies {
+        margin-top: 30px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    th {
+        background: #667eea;
+        color: white;
+    }
+    tr:hover { background: #f8f9fa; }
+</style>
+{% endblock %}
+{% block content %}
+    <h2>Admin Dashboard</h2>
+    
+    <div class="stats">
+        <div class="stat-card">
+            <h3>{{ total_bookings }}</h3>
+            <p>Total Bookings</p>
+        </div>
+        <div class="stat-card">
+            <h3>₹{{ "%.2f"|format(total_revenue) }}</h3>
+            <p>Total Revenue</p>
+        </div>
+    </div>
+    
+    <div class="popular-movies">
+        <h3>Most Popular Movies</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Movie Title</th>
+                    <th>Total Bookings</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for movie in popular_movies %}
+                <tr>
+                    <td>{{ movie.title }}</td>
+                    <td>{{ movie.bookings }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="management-sections" style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+        <!-- Add Movie Section -->
+        <div class="add-movie-section">
+            <h3>Add New Movie</h3>
+            <form method="POST" action="/admin/add_movie">
+                <div style="margin-bottom: 15px;">
+                    <label for="title">Movie Title:</label>
+                    <input type="text" id="title" name="title" required style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="genre">Genre:</label>
+                    <input type="text" id="genre" name="genre" required style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="language">Language:</label>
+                    <input type="text" id="language" name="language" required style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="release_date">Release Date:</label>
+                    <input type="date" id="release_date" name="release_date" required style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="duration">Duration (minutes):</label>
+                    <input type="number" id="duration" name="duration" required min="1" style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <button type="submit" style="padding: 10px 30px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%;">Add Movie</button>
+            </form>
+        </div>
+
+        <!-- Add Show Section -->
+        <div class="add-show-section">
+            <h3>Add New Show</h3>
+            <form method="POST" action="/admin/add_show">
+                <div style="margin-bottom: 15px;">
+                    <label for="movie_id">Movie:</label>
+                    <select id="movie_id" name="movie_id" required style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">Select a movie</option>
+                        {% for movie in all_movies %}
+                        <option value="{{ movie.movie_id }}">{{ movie.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="screen_id">Screen:</label>
+                    <select id="screen_id" name="screen_id" required style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">Select a screen</option>
+                        {% for screen in all_screens %}
+                        <option value="{{ screen.screen_id }}">{{ screen.theatre_name }} - Screen {{ screen.screen_num }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="showdate">Show Date:</label>
+                    <input type="date" id="showdate" name="showdate" required style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="show_time">Show Time:</label>
+                    <input type="time" id="show_time" name="show_time" required style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <button type="submit" style="padding: 10px 30px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%;">Add Show</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

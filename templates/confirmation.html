@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Booking Confirmed{% endblock %}
+{% block extra_css %}
+<style>
+    .confirmation-box {
+        max-width: 600px;
+        margin: 0 auto;
+        text-align: center;
+    }
+    .success-icon {
+        font-size: 80px;
+        color: #28a745;
+        margin-bottom: 20px;
+    }
+    .ticket {
+        background: #f8f9fa;
+        padding: 30px;
+        border-radius: 10px;
+        border: 2px dashed #667eea;
+        margin: 30px 0;
+    }
+    .ticket h3 { color: #667eea; margin-bottom: 20px; }
+    .ticket-detail {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #ddd;
+    }
+    .ticket-detail:last-child { border-bottom: none; }
+    .btn {
+        padding: 15px 30px;
+        background: #667eea;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        display: inline-block;
+        margin: 10px;
+    }
+</style>
+{% endblock %}
+{% block content %}
+    <div class="confirmation-box">
+        <div class="success-icon">✓</div>
+        <h2>Booking Confirmed!</h2>
+        <p>Your booking has been successfully confirmed</p>
+        
+        <div class="ticket">
+            <h3>Booking ID: #{{ booking.booking_id }}</h3>
+            <div class="ticket-detail">
+                <strong>Movie:</strong>
+                <span>{{ booking.title }}</span>
+            </div>
+            <div class="ticket-detail">
+                <strong>Theatre:</strong>
+                <span>{{ booking.theatre_name }}</span>
+            </div>
+            <div class="ticket-detail">
+                <strong>Show Time:</strong>
+                <span>{{ booking.showdate }} at {{ booking.show_time.strftime('%I:%M %p') }}</span>
+            </div>
+            <div class="ticket-detail">
+                <strong>Seats:</strong>
+                <span>{{ booking.seats }}</span>
+            </div>
+            <div class="ticket-detail">
+                <strong>Total Amount:</strong>
+                <span>₹{{ "%.2f"|format(booking.amount) }}</span>
+            </div>
+        </div>
+        
+        <a href="/" class="btn">Book Another Movie</a>
+        <button onclick="window.print()" class="btn">Print Ticket</button>
+    </div>
+{% endblock %}

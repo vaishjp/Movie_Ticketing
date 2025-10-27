@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}User Profile{% endblock %}
+{% block extra_css %}
+<script>
+    sessionStorage.setItem('user_id', '{{ user.user_id }}');
+    // Force navigation update
+    if (typeof updateNavigation === 'function') {
+        setTimeout(updateNavigation, 100);
+    }
+</script>
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+    .profile-header h2 { margin-bottom: 10px; }
+    .booking-history {
+        margin-top: 30px;
+    }
+    .booking-card {
+        border: 2px solid #667eea;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background: #f8f9fa;
+    }
+    .booking-card h4 {
+        color: #667eea;
+        margin-bottom: 10px;
+    }
+    .booking-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 10px;
+    }
+    .detail-item {
+        padding: 10px;
+        background: white;
+        border-radius: 5px;
+    }
+    .detail-item strong {
+        color: #667eea;
+        display: block;
+        margin-bottom: 5px;
+    }
+    .status-success { color: #28a745; font-weight: bold; }
+    .status-pending { color: #ffc107; font-weight: bold; }
+    .no-bookings {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+</style>
+{% endblock %}
+{% block content %}
+    <div class="profile-header">
+        <h2>{{ user.user_name }}</h2>
+        <p>📧 {{ user.email }}</p>
+        <p>📱 {{ user.phone }}</p>
+    </div>
+    
+    <div class="booking-history">
+        <h3>Booking History</h3>
+        {% if bookings %}
+            {% for booking in bookings %}
+            <div class="booking-card">
+                <h4>🎬 {{ booking.title }}</h4>
+                <div class="booking-details">
+                    <div class="detail-item">
+                        <strong>Booking ID</strong>
+                        #{{ booking.booking_id }}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Theatre</strong>
+                        {{ booking.theatre_name }}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Show Date & Time</strong>
+                        {{ booking.showdate }}<br>
+                        {{ booking.show_time.strftime('%I:%M %p') if booking.show_time else 'N/A' }}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Seats</strong>
+                        {{ booking.seats }}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Amount</strong>
+                        ₹{{ "%.2f"|format(booking.amount) }}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Payment Status</strong>
+                        <span class="status-{{ booking.status|lower }}">{{ booking.status }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Booking Date</strong>
+                        {{ booking.booking_date.strftime('%Y-%m-%d %I:%M %p') if booking.booking_date else 'N/A' }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-bookings">
+                <h3>No bookings yet</h3>
+                <p>Start booking your favorite movies!</p>
+                <a href="/" style="display: inline-block; margin-top: 20px; padding: 10px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px;">Browse Movies</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

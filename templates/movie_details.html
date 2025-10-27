@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ movie.title }} - Book Tickets{% endblock %}
+{% block extra_css %}
+<style>
+    .movie-header {
+        text-align: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+    .show-list {
+        display: grid;
+        gap: 15px;
+        margin-top: 20px;
+    }
+    .show-item {
+        border: 2px solid #667eea;
+        padding: 20px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .show-info h4 { color: #667eea; margin-bottom: 5px; }
+    .show-info p { color: #666; }
+    .btn {
+        padding: 10px 30px;
+        background: #667eea;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background 0.3s;
+    }
+    .btn:hover { background: #764ba2; }
+</style>
+{% endblock %}
+{% block content %}
+    <div class="movie-header">
+        <h2>{{ movie.title }}</h2>
+        <p>{{ movie.genre }} | {{ movie.language }} | {{ movie.duration }} mins</p>
+        <p>Release Date: {{ movie.ReleaseDate }}</p>
+    </div>
+    
+    <h3>Available Shows</h3>
+    <div class="show-list">
+        {% for show in shows %}
+        <div class="show-item">
+            <div class="show-info">
+                <h4>{{ show.theatre_name }} - Screen {{ show.screen_num }}</h4>
+                <p>{{ show.showdate }} at {{ show.show_time.strftime('%I:%M %p') }}</p>
+            </div>
+            <a href="/show/{{ show.show_id }}/seats" class="btn">Select Seats</a>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

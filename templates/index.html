@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Home - Movie Ticketing{% endblock %}
+{% block extra_css %}
+<style>
+    .movie-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .movie-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        transition: transform 0.3s;
+        background: #f8f9fa;
+    }
+    .movie-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    .movie-card h3 { color: #667eea; margin-bottom: 10px; }
+    .movie-card p { color: #666; margin: 5px 0; }
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background: #667eea;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-top: 10px;
+        transition: background 0.3s;
+    }
+    .btn:hover { background: #764ba2; }
+</style>
+{% endblock %}
+{% block content %}
+    <h2>Now Showing</h2>
+    <div class="movie-grid">
+        {% for movie in movies %}
+        <div class="movie-card">
+            <h3>{{ movie.title }}</h3>
+            <p><strong>Genre:</strong> {{ movie.genre }}</p>
+            <p><strong>Language:</strong> {{ movie.language }}</p>
+            <p><strong>Duration:</strong> {{ movie.duration }} mins</p>
+            <a href="/movie/{{ movie.movie_id }}" class="btn">Book Now</a>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

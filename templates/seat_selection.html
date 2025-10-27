@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}Select Seats{% endblock %}
+{% block extra_css %}
+<style>
+    .show-info {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+    .seat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 10px;
+        margin: 20px 0;
+    }
+    .seat {
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .seat:hover { border-color: #667eea; }
+    .seat.selected {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    .seat-type-regular { border-color: #28a745; }
+    .seat-type-premium { border-color: #ffc107; }
+    .seat-type-vip { border-color: #dc3545; }
+    .booking-summary {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 20px;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        display: none;
+    }
+    .booking-summary.active { display: block; }
+    .btn {
+        padding: 15px 30px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .btn:hover { background: #764ba2; }
+</style>
+{% endblock %}
+{% block content %}
+    <div class="show-info">
+        <h2>{{ show.title }}</h2>
+        <p><strong>Theatre:</strong> {{ show.theatre_name }} - Screen {{ show.screen_num }}</p>
+        <p><strong>Show Time:</strong> {{ show.showdate }} at {{ show.show_time.strftime('%I:%M %p') }}</p>
+    </div>
+    
+    <h3>Select Your Seats</h3>
+    <div class="seat-grid" id="seatGrid">
+        {% for seat in seats %}
+        <div class="seat seat-type-{{ seat.seat_type|lower }}" 
+             data-seat-id="{{ seat.seat_id }}"
+             data-seat-price="{{ seat.price }}">
+            <div>{{ seat.seat_number }}</div>
+            <small>₹{{ "%.2f"|format(seat.price) }}</small>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="booking-summary" id="bookingSummary">
+        <div class="container">
+            <p><strong>Selected Seats:</strong> <span id="selectedSeats"></span></p>
+            <p><strong>Total Amount:</strong> ₹<span id="totalAmount">0</span></p>
+            <button class="btn" onclick="proceedToBooking()">Proceed to Payment</button>
+        </div>
+    </div>
+    
+    <script>
+        let selectedSeats = [];
+        let totalAmount = 0;
+        
+        document.querySelectorAll('.seat').forEach(seat => {
+            seat.addEventListener('click', function() {
+                const seatId = this.dataset.seatId;
+                const seatPrice = parseFloat(this.dataset.seatPrice);
+                const seatNumber = this.querySelector('div').textContent;
+                
+                if (this.classList.contains('selected')) {
+                    this.classList.remove('selected');
+                    selectedSeats = selectedSeats.filter(s => s.id !== seatId);
+                    totalAmount -= seatPrice;
+                } else {
+                    this.classList.add('selected');
+                    selectedSeats.push({id: seatId, number: seatNumber, price: seatPrice});
+                    totalAmount += seatPrice;
+                }
+                
+                updateSummary();
+            });
+        });
+        
+        function updateSummary() {
+            const summary = document.getElementById('bookingSummary');
+            const seatsDisplay = document.getElementById('selectedSeats');
+            const amountDisplay = document.getElementById('totalAmount');
+            
+            if (selectedSeats.length > 0) {
+                summary.classList.add('active');
+                seatsDisplay.textContent = selectedSeats.map(s => s.number).join(', ');
+                amountDisplay.textContent = totalAmount.toFixed(2);
+            } else {
+                summary.classList.remove('active');
+            }
+        }
+        
+        function proceedToBooking() {
+            let userId = sessionStorage.getItem('user_id');
+            
+            if (!userId) {
+                alert('Please login or register to book tickets.');
+                window.location.href = '/user';
+                return;
+            }
+            
+            const seatIds = selectedSeats.map(s => parseInt(s.id));
+            
+            fetch('/book', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: parseInt(userId),
+                    show_id: {{ show.show_id }},
+                    seat_ids: seatIds
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/payment/' + data.booking_id;
+                } else {
+                    alert('Booking failed: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error);
+            });
+        }
+    </script>
+{% endblock %}

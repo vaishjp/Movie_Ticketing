@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redirecting...</title>
+    <script>
+        sessionStorage.setItem('user_id', '{{ user_id }}');
+        window.location.href = '/user/{{ user_id }}';
+    </script>
+</head>
+<body>
+    <p>Redirecting to your profile...</p>
+</body>
+</html>
